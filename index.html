@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torpaq-Əmlak Vergisi Hesablayıcısı</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4a7c66">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vergi Hesab">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eaf6f0 0%, #f7f3e8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #3b3b3b;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    padding: 32px 28px;
+    max-width: 460px;
+    width: 100%;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    color: #4a7c66;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #9a9a9a;
+    margin-bottom: 24px;
+  }
+
+  h2.section-title {
+    font-size: 15px;
+    color: #4a7c66;
+    margin: 28px 0 12px;
+    padding-top: 16px;
+    border-top: 1.5px dashed #cfe6d9;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #5a5a5a;
+  }
+
+  input[type="number"],
+  input[type="date"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #dcecE4;
+    background: #fbfdfc;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    color: #3b3b3b;
+  }
+
+  input[type="number"]:focus,
+  input[type="date"]:focus {
+    border-color: #8fc9ab;
+    box-shadow: 0 0 0 3px rgba(143,201,171,0.2);
+  }
+
+  .results {
+    margin-top: 8px;
+    background: #f4faf6;
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 6px 0;
+    color: #5a5a5a;
+    gap: 8px;
+  }
+
+  .result-row span:last-child {
+    font-weight: 600;
+    color: #3b3b3b;
+    text-align: right;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1.5px dashed #cfe6d9;
+  }
+
+  .total-row span:first-child {
+    font-size: 15px;
+    font-weight: 700;
+    color: #4a7c66;
+  }
+
+  .total-row span:last-child {
+    font-size: 22px;
+    font-weight: 800;
+    color: #d68a3c;
+  }
+
+  .manat {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9a9a9a;
+    margin-left: 4px;
+  }
+
+  /* Payments */
+  .payment-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+
+  .payment-row input[type="date"] {
+    flex: 1.3;
+  }
+
+  .payment-row input[type="number"] {
+    flex: 1;
+  }
+
+  .payment-row .remove-btn {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid #f0d3d3;
+    background: #fdf2f2;
+    color: #c0645f;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .add-btn {
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    border: 1.5px dashed #8fc9ab;
+    background: #f4faf6;
+    color: #4a7c66;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  .add-btn:hover {
+    background: #eaf6f0;
+  }
+
+  .no-payments {
+    font-size: 13px;
+    color: #b8b8b8;
+    padding: 4px 0 10px;
+  }
+
+  /* Debt breakdown table */
+  .debt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    font-size: 12.5px;
+  }
+
+  .debt-table th {
+    text-align: left;
+    color: #9a9a9a;
+    font-weight: 600;
+    padding: 6px 4px;
+    border-bottom: 1.5px solid #e5efe9;
+  }
+
+  .debt-table td {
+    padding: 7px 4px;
+    border-bottom: 1px solid #f0f4f2;
+    color: #5a5a5a;
+  }
+
+  .debt-table td.num, .debt-table th.num {
+    text-align: right;
+  }
+
+  .debt-table tr.overdue td {
+    color: #c0645f;
+  }
+
+  .debt-table tr.paid td {
+    color: #7fae8f;
+  }
+
+  .future-note {
+    font-size: 12.5px;
+    color: #9a9a9a;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .warning {
+    font-size: 12.5px;
+    color: #c0865f;
+    background: #fdf6ef;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 6px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 11px;
+    color: #b8b8b8;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Torpaq-Əmlak Vergisi</h1>
+  <div class="subtitle">Hesablama avtomatik aparılır</div>
+
+  <div class="field">
+    <label for="emlak">Əmlakın sahəsi (kvadrat metr)</label>
+    <input type="number" id="emlak" min="0" placeholder="məs: 130" oninput="hesabla()">
+  </div>
+
+  <div class="field">
+    <label for="torpaq">Torpağın sahəsi (sot)</label>
+    <input type="number" id="torpaq" min="0" placeholder="məs: 2" oninput="hesabla()">
+  </div>
+
+  <div class="results">
+    <div class="result-row">
+      <span>Vergi tutulan sahə (30 kv.m çıxılmaqla)</span>
+      <span id="verginiSaheSi">0 kv.m</span>
+    </div>
+    <div class="result-row">
+      <span>Əmlak vergisi (illik)</span>
+      <span id="emlakVergi">0.00 ₼</span>
+    </div>
+    <div class="result-row">
+      <span>Torpaq vergisi (illik)</span>
+      <span id="torpaqVergi">0.00 ₼</span>
+    </div>
+    <div class="total-row">
+      <span>İllik ümumi vergi</span>
+      <span id="umumiVergi">0.00 ₼</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">Qeydiyyat və tarix</h2>
+
+  <div class="field">
+    <label for="qeydiyyatTarixi">Qeydiyyat tarixi</label>
+    <input type="date" id="qeydiyyatTarixi" oninput="hesabla()">
+  </div>
+
+  <div class="field">
+    <label for="cariTarix">Borcun hesablanacağı tarix (bugünkü tarix)</label>
+    <input type="date" id="cariTarix" oninput="hesabla()">
+  </div>
+
+  <h2 class="section-title">Ödənişlər</h2>
+
+  <div class="field">
+    <div id="odenisSiyahisi"></div>
+    <div id="odenisBosMesaj" class="no-payments">Hələ ödəniş əlavə edilməyib.</div>
+    <button type="button" class="add-btn" onclick="odenisElaveEt()">+ Ödəniş əlavə et</button>
+  </div>
+
+  <h2 class="section-title">Borc hesabatı</h2>
+  <div id="borcHesabati"></div>
+
+  <footer>Created by Raul Mammadzada</footer>
+</div>
+
+<script>
+let odenisSayaci = 0;
+
+function bugunISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d - tz).toISOString().slice(0, 10);
+}
+
+function odenisElaveEt(tarix, meblegh) {
+  odenisSayaci++;
+  const id = odenisSayaci;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'payment-row';
+  wrapper.dataset.id = id;
+  wrapper.innerHTML =
+    '<input type="date" class="pay-date" oninput="hesabla()" value="' + (tarix || '') + '">' +
+    '<input type="number" class="pay-amount" min="0" step="0.01" placeholder="Məbləğ" oninput="hesabla()" value="' + (meblegh != null ? meblegh : '') + '">' +
+    '<button type="button" class="remove-btn" onclick="odenisSil(' + id + ')">✕</button>';
+  document.getElementById('odenisSiyahisi').appendChild(wrapper);
+  yeniləOdenisBosMesaj();
+  hesabla();
+}
+
+function odenisSil(id) {
+  const row = document.querySelector('.payment-row[data-id="' + id + '"]');
+  if (row) row.remove();
+  yeniləOdenisBosMesaj();
+  hesabla();
+}
+
+function yeniləOdenisBosMesaj() {
+  const has = document.querySelectorAll('.payment-row').length > 0;
+  document.getElementById('odenisBosMesaj').style.display = has ? 'none' : 'block';
+}
+
+function odenisleriOxu() {
+  const rows = document.querySelectorAll('.payment-row');
+  const list = [];
+  rows.forEach(r => {
+    const tarixStr = r.querySelector('.pay-date').value;
+    const meblegh = parseFloat(r.querySelector('.pay-amount').value) || 0;
+    if (tarixStr && meblegh > 0) {
+      list.push({ date: parseISO(tarixStr), amount: meblegh });
+    }
+  });
+  list.sort((a, b) => a.date - b.date);
+  return list;
+}
+
+function parseISO(str) {
+  const parts = str.split('-').map(Number);
+  return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function gunFarqi(d1, d2) {
+  const ms1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
+  const ms2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
+  return Math.round((ms2 - ms1) / 86400000);
+}
+
+function formatTarix(d) {
+  const gun = String(d.getDate()).padStart(2, '0');
+  const ay = String(d.getMonth() + 1).padStart(2, '0');
+  return gun + '.' + ay + '.' + d.getFullYear();
+}
+
+function hesabla() {
+  const emlakSahe = parseFloat(document.getElementById('emlak').value) || 0;
+  const torpaqSahe = parseFloat(document.getElementById('torpaq').value) || 0;
+
+  let vergiTutulanSahe = 0;
+  let emlakVergi = 0;
+  if (emlakSahe > 30) {
+    vergiTutulanSahe = emlakSahe - 30;
+    emlakVergi = vergiTutulanSahe * 0.32;
+  }
+
+  const torpaqVergi = torpaqSahe * 0.6;
+  const umumi = emlakVergi + torpaqVergi;
+
+  document.getElementById('verginiSaheSi').textContent = vergiTutulanSahe.toFixed(2) + ' kv.m';
+  document.getElementById('emlakVergi').textContent = emlakVergi.toFixed(2) + ' ₼';
+  document.getElementById('torpaqVergi').textContent = torpaqVergi.toFixed(2) + ' ₼';
+  document.getElementById('umumiVergi').textContent = umumi.toFixed(2) + ' ₼';
+
+  hesablaBorc(umumi);
+}
+
+function hesablaBorc(illikVergi) {
+  const container = document.getElementById('borcHesabati');
+  const qeydiyyatStr = document.getElementById('qeydiyyatTarixi').value;
+  const cariStr = document.getElementById('cariTarix').value;
+
+  if (!qeydiyyatStr || !cariStr) {
+    container.innerHTML = '<div class="future-note">Hesabatı görmək üçün qeydiyyat tarixini və bugünkü tarixi daxil edin.</div>';
+    return;
+  }
+
+  const qeydiyyat = parseISO(qeydiyyatStr);
+  const cari = parseISO(cariStr);
+
+  if (cari < qeydiyyat) {
+    container.innerHTML = '<div class="warning">Bugünkü tarix qeydiyyat tarixindən əvvəl ola bilməz.</div>';
+    return;
+  }
+
+  if (illikVergi <= 0) {
+    container.innerHTML = '<div class="future-note">Vergi məbləği 0 olduğu üçün borc yoxdur.</div>';
+    return;
+  }
+
+  const regYear = qeydiyyat.getFullYear();
+  const curYear = cari.getFullYear();
+  const yariMeblegh = illikVergi / 2;
+
+  // Bütün hissələri (avqust/noyabr) qeydiyyat ilindən cari ilə qədər yarat
+  const hisseler = [];
+  for (let y = regYear; y <= curYear; y++) {
+    hisseler.push({ il: y, ad: '15 Avqust', due: new Date(y, 7, 15), meblegh: yariMeblegh, odenilib: 0 });
+    hisseler.push({ il: y, ad: '15 Noyabr', due: new Date(y, 10, 15), meblegh: yariMeblegh, odenilib: 0 });
+  }
+  hisseler.sort((a, b) => a.due - b.due);
+
+  // Ödənişləri FIFO qaydasında ən köhnə hissəyə tətbiq et
+  const odenisler = odenisleriOxu();
+  odenisler.forEach(od => {
+    let qalan = od.amount;
+    for (let i = 0; i < hisseler.length && qalan > 0.0000001; i++) {
+      const h = hisseler[i];
+      const bosluq = h.meblegh - h.odenilib;
+      if (bosluq > 0) {
+        const teyinEdilen = Math.min(bosluq, qalan);
+        h.odenilib += teyinEdilen;
+        qalan -= teyinEdilen;
+      }
+    }
+  });
+
+  let cemiEsasBorc = 0;
+  let cemiFaiz = 0;
+  const rows = [];
+
+  // Qeydiyyat ilindən cari ilə qədər olan hər hissə "illik vergi" olaraq
+  // əsas borca daxildir (ödəniş müddəti keçməsə belə). Faiz isə yalnız
+  // müddət keçmiş hissələr üçün, öz son tarixindən başlayaraq hesablanır.
+  hisseler.forEach(h => {
+    const qalanBorc = Math.max(0, h.meblegh - h.odenilib);
+    let faiz = 0;
+    let gecikmeGunu = 0;
+    const muddetKecib = cari > h.due;
+    if (qalanBorc > 0.0000001 && muddetKecib) {
+      const faizBaslama = new Date(h.due);
+      faizBaslama.setDate(faizBaslama.getDate() + 1);
+      gecikmeGunu = Math.min(gunFarqi(faizBaslama, cari), 365);
+      if (gecikmeGunu < 0) gecikmeGunu = 0;
+      faiz = qalanBorc * 0.001 * gecikmeGunu;
+    }
+    cemiEsasBorc += qalanBorc;
+    cemiFaiz += faiz;
+    rows.push({
+      etiket: h.il + ' — ' + h.ad,
+      meblegh: h.meblegh,
+      odenilib: h.odenilib,
+      qalan: qalanBorc,
+      gun: gecikmeGunu,
+      faiz: faiz,
+      muddetKecib: muddetKecib,
+      vaxtindaOdenilib: qalanBorc <= 0.0000001
+    });
+  });
+
+  let html = '';
+
+  if (rows.length === 0) {
+    html += '<div class="future-note">Hələ ödəniş müddəti çatan heç bir vergi hissəsi yoxdur.</div>';
+  } else {
+    html += '<table class="debt-table"><thead><tr>' +
+      '<th>Hissə</th><th class="num">Məbləğ</th><th class="num">Ödənilib</th>' +
+      '<th class="num">Qalıq</th><th class="num">Gec. gün</th><th class="num">Faiz</th>' +
+      '</tr></thead><tbody>';
+
+    rows.forEach(r => {
+      let cls = '';
+      if (r.vaxtindaOdenilib) cls = 'paid';
+      else if (r.muddetKecib) cls = 'overdue';
+      const gunMetni = r.muddetKecib ? r.gun : (r.vaxtindaOdenilib ? '—' : 'hələ çatmayıb');
+      html += '<tr class="' + cls + '">' +
+        '<td>' + r.etiket + '</td>' +
+        '<td class="num">' + r.meblegh.toFixed(2) + '</td>' +
+        '<td class="num">' + r.odenilib.toFixed(2) + '</td>' +
+        '<td class="num">' + r.qalan.toFixed(2) + '</td>' +
+        '<td class="num">' + gunMetni + '</td>' +
+        '<td class="num">' + r.faiz.toFixed(2) + '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+
+    html += '<div class="results" style="margin-top:14px;">' +
+      '<div class="result-row"><span>Cəmi əsas borc</span><span>' + cemiEsasBorc.toFixed(2) + ' ₼</span></div>' +
+      '<div class="result-row"><span>Cəmi faiz</span><span>' + cemiFaiz.toFixed(2) + ' ₼</span></div>' +
+      '<div class="total-row"><span>Ümumi borc</span><span>' + (cemiEsasBorc + cemiFaiz).toFixed(2) + ' ₼</span></div>' +
+      '</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// İlkin vəziyyət: bugünkü tarixi doldur və bir boş ödəniş sətri göstər
+document.getElementById('cariTarix').value = bugunISO();
+yeniləOdenisBosMesaj();
+hesabla();
+</script>
+
+</body>
+</html>
