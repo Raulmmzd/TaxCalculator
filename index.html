@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torpaq-Əmlak Vergisi Hesablayıcısı</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4a7c66">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vergi Hesab">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eaf6f0 0%, #f7f3e8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #3b3b3b;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    padding: 32px 28px;
+    max-width: 440px;
+    width: 100%;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    color: #4a7c66;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #9a9a9a;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #4a7c66;
+    margin: 26px 0 12px;
+    padding-top: 14px;
+    border-top: 1.5px dashed #cfe6d9;
+  }
+
+  .section-title:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #5a5a5a;
+  }
+
+  .hint {
+    font-size: 11.5px;
+    color: #9a9a9a;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  input[type="number"],
+  input[type="date"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #dcecE4;
+    background: #fbfdfc;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    color: #3b3b3b;
+  }
+
+  input[type="number"]:focus,
+  input[type="date"]:focus {
+    border-color: #8fc9ab;
+    box-shadow: 0 0 0 3px rgba(143,201,171,0.2);
+  }
+
+  .results {
+    margin-top: 8px;
+    background: #f4faf6;
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 6px 0;
+    color: #5a5a5a;
+  }
+
+  .result-row span:last-child {
+    font-weight: 600;
+    color: #3b3b3b;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1.5px dashed #cfe6d9;
+  }
+
+  .total-row span:first-child {
+    font-size: 15px;
+    font-weight: 700;
+    color: #4a7c66;
+  }
+
+  .total-row span:last-child {
+    font-size: 22px;
+    font-weight: 800;
+    color: #d68a3c;
+  }
+
+  .manat {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9a9a9a;
+    margin-left: 4px;
+  }
+
+  /* Payments */
+  .payments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .payment-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 32px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .payment-row input[type="date"],
+  .payment-row input[type="number"] {
+    padding: 9px 10px;
+    font-size: 13.5px;
+    border-radius: 10px;
+  }
+
+  .remove-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 1.5px solid #f0d3d3;
+    background: #fdf5f5;
+    color: #c96a6a;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .add-btn {
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    border: 1.5px dashed #8fc9ab;
+    background: #f4faf6;
+    color: #4a7c66;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+
+  .add-btn:active { background: #eaf6f0; }
+
+  /* Faiz results */
+  .faiz-box {
+    margin-top: 8px;
+    background: #fdf8f0;
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .faiz-total-row span:last-child {
+    color: #c9612f;
+  }
+
+  .detal-hesabat {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detal-row {
+    background: #fbfdfc;
+    border: 1px solid #eaf1ed;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .detal-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #5a5a5a;
+    margin-bottom: 4px;
+  }
+
+  .detal-status {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+
+  .status-paid { background: #e4f4ea; color: #4a7c66; }
+  .status-unpaid { background: #fbe9e6; color: #c96a4a; }
+  .status-partial { background: #fdf1de; color: #b7842e; }
+  .status-future { background: #eef0f2; color: #9a9a9a; }
+
+  .detal-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8a8a8a;
+    padding: 2px 0;
+  }
+
+  .detal-line span:last-child {
+    font-weight: 600;
+    color: #5a5a5a;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 11px;
+    color: #b8b8b8;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Torpaq-Əmlak Vergisi</h1>
+  <div class="subtitle">Hesablama avtomatik aparılır</div>
+
+  <div class="section-title">Əmlak məlumatları</div>
+
+  <div class="field">
+    <label for="emlak">Əmlakın sahəsi (kvadrat metr)</label>
+    <input type="number" id="emlak" min="0" placeholder="məs: 130" oninput="hesabla()">
+  </div>
+
+  <div class="field">
+    <label for="torpaq">Torpağın sahəsi (sot)</label>
+    <input type="number" id="torpaq" min="0" placeholder="məs: 2" oninput="hesabla()">
+  </div>
+
+  <div class="results">
+    <div class="result-row">
+      <span>Vergi tutulan sahə (30 kv.m çıxılmaqla)</span>
+      <span id="verginiSaheSi">0 kv.m</span>
+    </div>
+    <div class="result-row">
+      <span>Əmlak vergisi</span>
+      <span id="emlakVergi">0.00 ₼</span>
+    </div>
+    <div class="result-row">
+      <span>Torpaq vergisi</span>
+      <span id="torpaqVergi">0.00 ₼</span>
+    </div>
+    <div class="total-row">
+      <span>İllik vergi</span>
+      <span id="umumiVergi">0.00 ₼</span>
+    </div>
+  </div>
+
+  <div class="section-title">Faiz hesablanması</div>
+
+  <div class="field">
+    <label for="qeydiyyatIli">Qeydiyyat ili</label>
+    <input type="number" id="qeydiyyatIli" min="2000" step="1" placeholder="məs: 2025" oninput="hesabla()">
+    <div class="hint">İllik vergi 15 avqust və 15 noyabr tarixlərinədək iki bərabər hissədə ödənilir. Gecikən hər gün üçün 0,1% faiz tutulur (maksimum 365 gün).</div>
+  </div>
+
+  <div class="field">
+    <label for="hesabTarixi">Hesablama tarixi</label>
+    <input type="date" id="hesabTarixi" oninput="hesabla()">
+  </div>
+
+  <div class="field">
+    <label>Edilmiş ödənişlər</label>
+    <div class="payments-list" id="paymentsList"></div>
+    <button type="button" class="add-btn" onclick="addPaymentRow()">+ Ödəniş əlavə et</button>
+  </div>
+
+  <div class="faiz-box">
+    <div class="result-row">
+      <span>Əsas borc</span>
+      <span id="esasBorc">0.00 ₼</span>
+    </div>
+    <div class="result-row">
+      <span>Hesablanmış faiz</span>
+      <span id="hesablanmisFaiz">0.00 ₼</span>
+    </div>
+    <div class="total-row faiz-total-row">
+      <span>Ümumi borc</span>
+      <span id="umumiBorc">0.00 ₼</span>
+    </div>
+    <div class="detal-hesabat" id="detalHesabat"></div>
+  </div>
+
+  <footer>Created by Raul Mammadzada</footer>
+</div>
+
+<script>
+  // ---------- Əsas vergi hesablanması ----------
+  function hesabla() {
+    const emlakSahe = parseFloat(document.getElementById('emlak').value) || 0;
+    const torpaqSahe = parseFloat(document.getElementById('torpaq').value) || 0;
+
+    let vergiTutulanSahe = 0;
+    let emlakVergi = 0;
+    if (emlakSahe > 30) {
+      vergiTutulanSahe = emlakSahe - 30;
+      emlakVergi = vergiTutulanSahe * 0.32;
+    }
+
+    const torpaqVergi = torpaqSahe * 0.6;
+    const illikVergi = emlakVergi + torpaqVergi;
+
+    document.getElementById('verginiSaheSi').textContent = vergiTutulanSahe.toFixed(2) + ' kv.m';
+    document.getElementById('emlakVergi').textContent = emlakVergi.toFixed(2) + ' ₼';
+    document.getElementById('torpaqVergi').textContent = torpaqVergi.toFixed(2) + ' ₼';
+    document.getElementById('umumiVergi').textContent = illikVergi.toFixed(2) + ' ₼';
+
+    hesablaFaiz(illikVergi);
+  }
+
+  // ---------- Ödəniş sətirləri ----------
+  function addPaymentRow(date, amount) {
+    const container = document.getElementById('paymentsList');
+    const row = document.createElement('div');
+    row.className = 'payment-row';
+    row.innerHTML =
+      '<input type="date" class="pay-date" value="' + (date || '') + '">' +
+      '<input type="number" class="pay-amount" placeholder="məbləğ" min="0" step="0.01" value="' + (amount || '') + '">' +
+      '<button type="button" class="remove-btn" onclick="removePayment(this)">✕</button>';
+    container.appendChild(row);
+    row.querySelectorAll('input').forEach(function (inp) {
+      inp.addEventListener('input', hesabla);
+    });
+  }
+
+  function removePayment(btn) {
+    btn.parentElement.remove();
+    hesabla();
+  }
+
+  // ---------- Tarix köməkçiləri ----------
+  function parseDateInput(str) {
+    if (!str) return null;
+    const parts = str.split('-');
+    return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  }
+
+  function addDays(date, n) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + n);
+    return d;
+  }
+
+  function daysBetween(d1, d2) {
+    return Math.round((d2 - d1) / 86400000);
+  }
+
+  function formatDateAz(date) {
+    const aylar = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avqust','sentyabr','oktyabr','noyabr','dekabr'];
+    return date.getDate() + ' ' + aylar[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
+  // ---------- Faiz hesablanması ----------
+  function hesablaFaiz(illikVergi) {
+    const qeydiyyatIli = parseInt(document.getElementById('qeydiyyatIli').value) || null;
+    const hesabTarixiStr = document.getElementById('hesabTarixi').value;
+    const hesabTarixi = hesabTarixiStr ? parseDateInput(hesabTarixiStr) : new Date();
+
+    const detalDiv = document.getElementById('detalHesabat');
+
+    if (!qeydiyyatIli || illikVergi <= 0 || qeydiyyatIli > hesabTarixi.getFullYear()) {
+      document.getElementById('esasBorc').textContent = '0.00 ₼';
+      document.getElementById('hesablanmisFaiz').textContent = '0.00 ₼';
+      document.getElementById('umumiBorc').textContent = '0.00 ₼';
+      detalDiv.innerHTML = '';
+      return;
+    }
+
+    const calcYear = hesabTarixi.getFullYear();
+    const yarim = illikVergi / 2;
+    const ilSayi = calcYear - qeydiyyatIli + 1;
+
+    // Bütün illər üzrə yarımillik ödəniş hissələri (yalnız artıq vaxtı çatanlar)
+    let installments = [];
+    for (let y = qeydiyyatIli; y <= calcYear; y++) {
+      installments.push({ label: '15 avqust ' + y, due: new Date(y, 7, 15), amount: yarim });
+      installments.push({ label: '15 noyabr ' + y, due: new Date(y, 10, 15), amount: yarim });
+    }
+    const dueInstallments = installments.filter(function (i) { return i.due <= hesabTarixi; });
+    dueInstallments.sort(function (a, b) { return a.due - b.due; });
+
+    // Ödənişlərin toplanması
+    const payRows = document.querySelectorAll('.payment-row');
+    let payments = [];
+    let totalPayments = 0;
+    payRows.forEach(function (row) {
+      const dStr = row.querySelector('.pay-date').value;
+      const a = parseFloat(row.querySelector('.pay-amount').value) || 0;
+      if (dStr && a > 0) {
+        const dt = parseDateInput(dStr);
+        if (dt <= hesabTarixi) {
+          payments.push({ date: dt, amount: a });
+          totalPayments += a;
+        }
+      }
+    });
+    payments.sort(function (a, b) { return a.date - b.date; });
+
+    // Ödənişləri ən köhnə ödəniş hissəsindən başlayaraq bölüşdürmək (FIFO)
+    let payPool = payments.map(function (p) { return { date: p.date, remaining: p.amount }; });
+    let totalFaiz = 0;
+    let detalHTML = '';
+
+    dueInstallments.forEach(function (inst) {
+      let remaining = inst.amount;
+      let allocEvents = [];
+      for (let i = 0; i < payPool.length && remaining > 0.0000001; i++) {
+        const p = payPool[i];
+        if (p.remaining <= 0) continue;
+        const use = Math.min(p.remaining, remaining);
+        allocEvents.push({ date: p.date, amount: use });
+        remaining -= use;
+        p.remaining -= use;
+      }
+      const qalanBorc = Math.max(0, remaining);
+
+      // Faiz pəncərəsi: son tarixdən bir gün sonra başlayır, maksimum 365 gün
+      const faizStart = addDays(inst.due, 1);
+      const elapsedDays = daysBetween(faizStart, hesabTarixi);
+      let instFaiz = 0;
+
+      if (elapsedDays > 0) {
+        const cappedDays = Math.min(elapsedDays, 365);
+        const effectiveEnd = addDays(faizStart, cappedDays);
+
+        let baseBalance = inst.amount;
+        allocEvents.filter(function (e) { return e.date < faizStart; })
+          .forEach(function (e) { baseBalance -= e.amount; });
+
+        const windowEvents = allocEvents
+          .filter(function (e) { return e.date >= faizStart && e.date <= effectiveEnd; })
+          .sort(function (a, b) { return a.date - b.date; });
+
+        let curBalance = baseBalance;
+        let curDate = faizStart;
+        windowEvents.forEach(function (ev) {
+          const segDays = daysBetween(curDate, ev.date);
+          if (segDays > 0 && curBalance > 0) {
+            instFaiz += curBalance * 0.001 * segDays;
+          }
+          curBalance = Math.max(0, curBalance - ev.amount);
+          curDate = ev.date;
+        });
+        const lastSegDays = daysBetween(curDate, effectiveEnd);
+        if (lastSegDays > 0 && curBalance > 0) {
+          instFaiz += curBalance * 0.001 * lastSegDays;
+        }
+      }
+
+      totalFaiz += instFaiz;
+
+      let statusClass = 'status-unpaid';
+      let statusText = 'Ödənilməyib';
+      if (qalanBorc <= 0.0000001) {
+        statusClass = 'status-paid';
+        statusText = 'Ödənilib';
+      } else if (qalanBorc < inst.amount - 0.0000001) {
+        statusClass = 'status-partial';
+        statusText = 'Qismən ödənilib';
+      }
+
+      detalHTML += '<div class="detal-row">' +
+        '<div class="detal-title">' + inst.label + '<span class="detal-status ' + statusClass + '">' + statusText + '</span></div>' +
+        '<div class="detal-line"><span>Məbləğ</span><span>' + inst.amount.toFixed(2) + ' ₼</span></div>' +
+        '<div class="detal-line"><span>Qalan borc</span><span>' + qalanBorc.toFixed(2) + ' ₼</span></div>' +
+        '<div class="detal-line"><span>Faiz</span><span>' + instFaiz.toFixed(2) + ' ₼</span></div>' +
+        '</div>';
+    });
+
+    // Hələ vaxtı çatmayan hissələr (məlumat üçün)
+    const futureInstallments = installments.filter(function (i) { return i.due > hesabTarixi; });
+    futureInstallments.forEach(function (inst) {
+      detalHTML += '<div class="detal-row">' +
+        '<div class="detal-title">' + inst.label + '<span class="detal-status status-future">Vaxtı çatmayıb</span></div>' +
+        '<div class="detal-line"><span>Məbləğ</span><span>' + inst.amount.toFixed(2) + ' ₼</span></div>' +
+        '</div>';
+    });
+
+    // Əsas borc: qeydiyyatdan bəri bütün illərin illik vergisi, ödənişlər çıxılmaqla
+    const totalEsasBorc = Math.max(0, ilSayi * illikVergi - totalPayments);
+    const umumiBorc = totalEsasBorc + totalFaiz;
+
+    document.getElementById('esasBorc').textContent = totalEsasBorc.toFixed(2) + ' ₼';
+    document.getElementById('hesablanmisFaiz').textContent = totalFaiz.toFixed(2) + ' ₼';
+    document.getElementById('umumiBorc').textContent = umumiBorc.toFixed(2) + ' ₼';
+    detalDiv.innerHTML = detalHTML;
+  }
+
+  // ---------- İlkin yükləmə ----------
+  (function init() {
+    const today = new Date();
+    const iso = today.getFullYear() + '-' +
+      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+      String(today.getDate()).padStart(2, '0');
+    document.getElementById('hesabTarixi').value = iso;
+    addPaymentRow();
+    hesabla();
+  })();
+</script>
+
+</body>
+</html>
